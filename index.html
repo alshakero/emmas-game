@@ -120,6 +120,7 @@
     }
 
     .animal-chip {
+      font-family: 'Bubblegum Sans', cursive;
       background: rgba(255,255,255,.65);
       border: 2px solid #f48fb1;
       border-radius: 14px;
@@ -128,7 +129,16 @@
       font-size: clamp(.85rem, 1.5vw, 1.15rem);
       color: #880e4f;
       backdrop-filter: blur(4px);
-      transition: transform .15s;
+      cursor: pointer;
+      transition: transform .15s, background .15s, box-shadow .15s;
+    }
+    .animal-chip:hover {
+      transform: scale(1.06);
+      background: rgba(255,255,255,.85);
+      box-shadow: 0 4px 12px rgba(233,30,99,.25);
+    }
+    .animal-chip:active {
+      transform: scale(.95);
     }
     .animal-chip .chip-num {
       font-family: 'Fredoka', cursive;
@@ -261,10 +271,11 @@ let digitTimer   = null;
 (function buildGrid() {
   const grid = document.getElementById('animalGrid');
   ANIMALS.forEach(a => {
-    const chip = document.createElement('div');
+    const chip = document.createElement('button');
     chip.className = 'animal-chip';
     chip.id = 'chip-' + a.num;
     chip.innerHTML = `<span class="chip-num">${a.num}</span>${a.name}`;
+    chip.addEventListener('click', () => playAnimal(a.num));
     grid.appendChild(chip);
   });
 })();
