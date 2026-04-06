@@ -384,11 +384,8 @@
       /* ── Start button ── */
       document.getElementById('startBtn').addEventListener('click', () => {
         const el = document.documentElement;
-        (
-          el.requestFullscreen ||
-          el.webkitRequestFullscreen ||
-          el.msRequestFullscreen
-        ).call(el);
+        const fs = el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen;
+        if (fs) fs.call(el).catch(() => {});
         state = 'intro';
         showScreen('game');
       });
