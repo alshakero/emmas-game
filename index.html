@@ -415,8 +415,7 @@
             },
             onStateChange(e) {
               if (e.data === YT.PlayerState.ENDED && state === 'video') {
-                state = 'intro';
-                showScreen('game');
+                returnToIntro();
               }
             },
           },
@@ -429,6 +428,22 @@
         const audio = new Audio(`voices/${a.num}-${a.name.toLowerCase()}.mp3`);
         audio.preload = 'auto';
         audioCache[a.num] = audio;
+      });
+
+      /* ── Navigation helpers ── */
+      function returnToIntro() {
+        interrupt();
+        state = 'intro';
+        if (location.hash === '#playing') history.back();
+        showScreen('game');
+      }
+
+      window.addEventListener('popstate', () => {
+        if (state === 'voice' || state === 'video') {
+          interrupt();
+          state = 'intro';
+          showScreen('game');
+        }
       });
 
       /* ── Core playback ── */
@@ -453,6 +468,7 @@
         interrupt();
         highlightChip(num);
         state = 'voice';
+        history.pushState({ screen: 'playing' }, '', '#playing');
 
         document.getElementById('animal-text').textContent = animal.name;
         document.getElementById('animal-sub').textContent =
@@ -477,8 +493,7 @@
 
       function startVideo(animal) {
         if (!ytReady) {
-          state = 'intro';
-          showScreen('game');
+          returnToIntro();
           return;
         }
         state = 'video';
@@ -491,15 +506,13 @@
         if (state === 'landing') return;
 
         if (e.key === 'Escape') {
-          interrupt();
           if (state === 'intro') {
             state = 'landing';
             if (document.fullscreenElement)
               document.exitFullscreen().catch(() => {});
             showScreen('landing');
           } else {
-            state = 'intro';
-            showScreen('game');
+            returnToIntro();
           }
           return;
         }
