@@ -391,8 +391,14 @@ document.addEventListener('keydown', (e) => {
 
   if (e.key === 'Escape') {
     interrupt();
-    state = 'intro';
-    showScreen('game');
+    if (state === 'intro') {
+      state = 'landing';
+      if (document.fullscreenElement) document.exitFullscreen().catch(() => {});
+      showScreen('landing');
+    } else {
+      state = 'intro';
+      showScreen('game');
+    }
     return;
   }
 
