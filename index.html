@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Emma's Game</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bubblegum+Sans&family=Fredoka:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Bubblegum Sans', 'Fredoka', cursive;
+      overflow: hidden;
+      user-select: none;
+      -webkit-user-select: none;
+      cursor: default;
+      background: #000;
+    }
+
+    .screen {
+      position: fixed;
+      inset: 0;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    .screen.active { display: flex; }
+
+    /* ─── Landing ──────────────────────────────── */
+    #landing {
+      background:
+        radial-gradient(ellipse at 20% 80%, rgba(255,182,193,.6) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 20%, rgba(255,105,180,.4) 0%, transparent 50%),
+        linear-gradient(135deg, #fff0f5 0%, #ffc0cb 40%, #ffb6c1 70%, #ff69b4 100%);
+    }
+
+    .landing-title {
+      font-family: 'Fredoka', cursive;
+      font-weight: 600;
+      font-size: clamp(3rem, 8vw, 7rem);
+      color: #d81b60;
+      text-shadow: 3px 3px 0 #f8bbd0, 6px 6px 12px rgba(216,27,96,.25);
+      margin-bottom: 3vh;
+      letter-spacing: 2px;
+    }
+
+    #startBtn {
+      font-family: 'Bubblegum Sans', cursive;
+      font-size: clamp(1.8rem, 4vw, 3.2rem);
+      padding: 2.5vh 6vw;
+      background: linear-gradient(135deg, #ec407a 0%, #e91e63 50%, #d81b60 100%);
+      color: #fff;
+      border: 4px solid rgba(255,255,255,.7);
+      border-radius: 60px;
+      cursor: pointer;
+      box-shadow:
+        0 8px 30px rgba(233,30,99,.45),
+        inset 0 2px 0 rgba(255,255,255,.3);
+      transition: transform .2s, box-shadow .2s;
+      animation: pulse 2.2s ease-in-out infinite;
+    }
+    #startBtn:hover {
+      transform: scale(1.06);
+      box-shadow: 0 12px 40px rgba(233,30,99,.6), inset 0 2px 0 rgba(255,255,255,.3);
+    }
+    #startBtn:active { transform: scale(.97); }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 8px 30px rgba(233,30,99,.45), 0 0 0 0 rgba(233,30,99,.35); }
+      50%      { box-shadow: 0 8px 30px rgba(233,30,99,.45), 0 0 0 24px rgba(233,30,99,0); }
+    }
+
+    .stars { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+    .star {
+      position: absolute;
+      width: 6px; height: 6px;
+      background: rgba(255,255,255,.8);
+      border-radius: 50%;
+      animation: twinkle 3s ease-in-out infinite;
+    }
+
+    @keyframes twinkle {
+      0%, 100% { opacity: .2; transform: scale(.8); }
+      50%      { opacity: 1;  transform: scale(1.3); }
+    }
+
+    /* ─── Game / Intro ─────────────────────────── */
+    #game {
+      background:
+        radial-gradient(ellipse at 50% 30%, rgba(255,182,193,.5) 0%, transparent 60%),
+        linear-gradient(160deg, #fff0f5 0%, #ffc0cb 50%, #ffb6c1 100%);
+      gap: 2vh;
+      padding: 2vh 2vw;
+    }
+
+    #intro-img {
+      max-height: 50vh;
+      max-width: 88vw;
+      border-radius: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,.18);
+      border: 5px solid #fff;
+    }
+
+    #game .prompt {
+      font-size: clamp(1.6rem, 3.5vw, 2.8rem);
+      color: #ad1457;
+      text-shadow: 2px 2px 4px rgba(0,0,0,.08);
+      text-align: center;
+    }
+
+    .animal-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 8px;
+      width: min(92vw, 900px);
+      margin-top: 1vh;
+    }
+
+    .animal-chip {
+      background: rgba(255,255,255,.65);
+      border: 2px solid #f48fb1;
+      border-radius: 14px;
+      padding: 6px 4px;
+      text-align: center;
+      font-size: clamp(.85rem, 1.5vw, 1.15rem);
+      color: #880e4f;
+      backdrop-filter: blur(4px);
+      transition: transform .15s;
+    }
+    .animal-chip .chip-num {
+      font-family: 'Fredoka', cursive;
+      font-weight: 600;
+      display: inline-block;
+      background: #ec407a;
+      color: #fff;
+      width: 1.7em; height: 1.7em;
+      line-height: 1.7em;
+      border-radius: 50%;
+      margin-right: 4px;
+      font-size: .9em;
+    }
+    .animal-chip.active {
+      transform: scale(1.08);
+      background: #fce4ec;
+      border-color: #e91e63;
+      box-shadow: 0 0 12px rgba(233,30,99,.4);
+    }
+
+    /* ─── Animal Name Overlay ──────────────────── */
+    #animal-overlay {
+      background:
+        radial-gradient(ellipse at 50% 50%, rgba(255,182,193,.7) 0%, transparent 70%),
+        linear-gradient(135deg, #fff0f5, #ffc0cb, #f8bbd0);
+      z-index: 10;
+    }
+
+    #animal-overlay h1 {
+      font-family: 'Fredoka', cursive;
+      font-weight: 600;
+      font-size: clamp(5rem, 14vw, 12rem);
+      color: #c2185b;
+      text-shadow: 4px 4px 0 #f8bbd0, 8px 8px 16px rgba(194,24,91,.2);
+      animation: popIn .45s cubic-bezier(.175,.885,.32,1.275);
+    }
+
+    #animal-overlay .sub {
+      font-size: clamp(1.5rem, 3vw, 2.5rem);
+      color: #e91e63;
+      margin-top: 1vh;
+    }
+
+    @keyframes popIn {
+      0%   { transform: scale(.2) rotate(-8deg); opacity: 0; }
+      100% { transform: scale(1)  rotate(0);     opacity: 1; }
+    }
+
+    /* ─── Video ────────────────────────────────── */
+    #video-screen {
+      background: #000;
+      z-index: 5;
+    }
+    #player { width: 100vw; height: 100vh; }
+  </style>
+</head>
+<body>
+
+<!-- ═══ Landing ═══ -->
+<div id="landing" class="screen active">
+  <div class="stars" id="stars"></div>
+  <div class="landing-title">Emma's Game</div>
+  <button id="startBtn">Play!</button>
+</div>
+
+<!-- ═══ Game / Intro ═══ -->
+<div id="game" class="screen">
+  <img id="intro-img" src="intro-image.png" alt="Emma's Animals">
+  <div class="prompt">Press a number from 1–18 to play an animal!</div>
+  <div class="animal-grid" id="animalGrid"></div>
+</div>
+
+<!-- ═══ Animal Name Overlay ═══ -->
+<div id="animal-overlay" class="screen">
+  <h1 id="animal-text"></h1>
+  <div class="sub" id="animal-sub"></div>
+</div>
+
+<!-- ═══ Video ═══ -->
+<div id="video-screen" class="screen">
+  <div id="player"></div>
+</div>
+
+<script>
+const ANIMALS = [
+  { num: 1,  name: 'Lion',      videoId: '7qx057kqx1E' },
+  { num: 2,  name: 'Elephant',  videoId: 'HuuLUF767oY' },
+  { num: 3,  name: 'Horse',     videoId: 'erYhEM4qLpU' },
+  { num: 4,  name: 'Hippo',     videoId: 'N9pHfrD0cWY' },
+  { num: 5,  name: 'Tiger',     videoId: 'FK3dav4bA4s' },
+  { num: 6,  name: 'Dog',       videoId: 'sBlBCFKfSfs' },
+  { num: 7,  name: 'Duck',      videoId: '54-8Ti_9qFg' },
+  { num: 8,  name: 'Chicken',   videoId: 'dFZa2KZ4fG4' },
+  { num: 9,  name: 'Monkey',    videoId: '-UrrgC52WFI' },
+  { num: 10, name: 'Rhino',     videoId: 'zANvvpxpwkU' },
+  { num: 11, name: 'Wolf',      videoId: 'KhQGo2IdA9s' },
+  { num: 12, name: 'Fox',       videoId: 'xwtaekgVt9Q' },
+  { num: 13, name: 'Frog',      videoId: 'C00uGPPJ2WU' },
+  { num: 14, name: 'Crocodile', videoId: '_bVZeOt7bCw' },
+  { num: 15, name: 'Mouse',     videoId: 'pqNDvkSyeCM' },
+  { num: 16, name: 'Cow',       videoId: '5zhTzItoK4I' },
+  { num: 17, name: 'Cat',       videoId: '8jM4XT-5CUA' },
+  { num: 18, name: 'Sheep',     videoId: '0fTwdhslb6E' },
+];
+
+/* ── State ── */
+let ytPlayer     = null;
+let ytReady      = false;
+let currentAudio = null;
+let state        = 'landing';
+let pendingDigit = null;
+let digitTimer   = null;
+
+/* ── Decorative stars on landing ── */
+(function spawnStars() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 40; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.left = Math.random() * 100 + '%';
+    s.style.top  = Math.random() * 100 + '%';
+    s.style.animationDelay    = (Math.random() * 4).toFixed(1) + 's';
+    s.style.animationDuration = (2 + Math.random() * 3).toFixed(1) + 's';
+    s.style.width = s.style.height = (4 + Math.random() * 5) + 'px';
+    container.appendChild(s);
+  }
+})();
+
+/* ── Build animal grid ── */
+(function buildGrid() {
+  const grid = document.getElementById('animalGrid');
+  ANIMALS.forEach(a => {
+    const chip = document.createElement('div');
+    chip.className = 'animal-chip';
+    chip.id = 'chip-' + a.num;
+    chip.innerHTML = `<span class="chip-num">${a.num}</span>${a.name}`;
+    grid.appendChild(chip);
+  });
+})();
+
+/* ── Screen helpers ── */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function highlightChip(num) {
+  document.querySelectorAll('.animal-chip').forEach(c => c.classList.remove('active'));
+  const chip = document.getElementById('chip-' + num);
+  if (chip) chip.classList.add('active');
+}
+
+/* ── Start button ── */
+document.getElementById('startBtn').addEventListener('click', () => {
+  const el = document.documentElement;
+  (el.requestFullscreen || el.webkitRequestFullscreen || el.msRequestFullscreen).call(el);
+  state = 'intro';
+  showScreen('game');
+});
+
+/* ── YouTube IFrame API ── */
+const ytTag = document.createElement('script');
+ytTag.src = 'https://www.youtube.com/iframe_api';
+document.head.appendChild(ytTag);
+
+window.onYouTubeIframeAPIReady = function () {
+  ytPlayer = new YT.Player('player', {
+    width: '100%',
+    height: '100%',
+    playerVars: {
+      autoplay: 0,
+      controls: 0,
+      rel: 0,
+      modestbranding: 1,
+      playsinline: 1,
+      fs: 0,
+      iv_load_policy: 3,
+      disablekb: 1,
+    },
+    events: {
+      onReady() { ytReady = true; },
+      onStateChange(e) {
+        if (e.data === YT.PlayerState.ENDED && state === 'video') {
+          state = 'intro';
+          showScreen('game');
+        }
+      },
+    },
+  });
+};
+
+/* ── Preload audio ── */
+const audioCache = {};
+ANIMALS.forEach(a => {
+  const audio = new Audio(`voices/${a.num}-${a.name.toLowerCase()}.mp3`);
+  audio.preload = 'auto';
+  audioCache[a.num] = audio;
+});
+
+/* ── Core playback ── */
+function interrupt() {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+    currentAudio.onended = null;
+    currentAudio = null;
+  }
+  if (ytReady) {
+    try { ytPlayer.stopVideo(); } catch (_) {}
+  }
+}
+
+function playAnimal(num) {
+  const animal = ANIMALS.find(a => a.num === num);
+  if (!animal) return;
+
+  interrupt();
+  highlightChip(num);
+  state = 'voice';
+
+  document.getElementById('animal-text').textContent = animal.name;
+  document.getElementById('animal-sub').textContent =
+    `#${animal.num} — get ready!`;
+  showScreen('animal-overlay');
+
+  const audio = audioCache[num];
+  if (!audio) { startVideo(animal); return; }
+
+  currentAudio = audio;
+  audio.currentTime = 0;
+
+  audio.onended = () => {
+    if (state === 'voice') startVideo(animal);
+  };
+
+  audio.play().catch(() => startVideo(animal));
+}
+
+function startVideo(animal) {
+  if (!ytReady) { state = 'intro'; showScreen('game'); return; }
+  state = 'video';
+  showScreen('video-screen');
+  ytPlayer.loadVideoById({ videoId: animal.videoId, startSeconds: 0 });
+}
+
+/* ── Keyboard handling ── */
+document.addEventListener('keydown', (e) => {
+  if (state === 'landing') return;
+
+  if (e.key === 'Escape') {
+    interrupt();
+    state = 'intro';
+    showScreen('game');
+    return;
+  }
+
+  const d = parseInt(e.key, 10);
+  if (isNaN(d) || d < 0 || d > 9) return;
+
+  if (pendingDigit !== null) {
+    clearTimeout(digitTimer);
+    const combined = pendingDigit * 10 + d;
+    pendingDigit = null;
+    if (combined >= 1 && combined <= 18) playAnimal(combined);
+    return;
+  }
+
+  if (d === 1) {
+    pendingDigit = 1;
+    digitTimer = setTimeout(() => {
+      pendingDigit = null;
+      playAnimal(1);
+    }, 400);
+  } else if (d >= 2 && d <= 9) {
+    playAnimal(d);
+  }
+});
+</script>
+</body>
+</html>
