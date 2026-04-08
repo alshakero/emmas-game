@@ -549,7 +549,10 @@
         }
 
         const d = parseInt(e.key, 10);
-        if (isNaN(d) || d < 0 || d > 9) return;
+        if (isNaN(d) || d < 0 || d > 9) {
+          playAnimal(ANIMALS[Math.floor(Math.random() * ANIMALS.length)].num);
+          return;
+        }
 
         if (pendingDigit !== null) {
           clearTimeout(digitTimer);
