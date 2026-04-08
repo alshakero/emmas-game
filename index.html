@@ -501,6 +501,16 @@
         ytPlayer.loadVideoById({ videoId: animal.videoId, startSeconds: 0, endSeconds: 15 });
       }
 
+      /* ── Numpad special key mapping ── */
+      const KEY_MAP = {
+        'Clear': 10,
+        '/':     11,
+        '*':     12,
+        '-':     13,
+        '+':     14,
+        'Enter': 15,
+      };
+
       /* ── Keyboard handling ── */
       document.addEventListener('keydown', (e) => {
         if (state === 'landing') return;
@@ -514,6 +524,17 @@
           } else {
             returnToIntro();
           }
+          return;
+        }
+
+        if (e.key === 'Backspace') {
+          returnToIntro();
+          return;
+        }
+
+        if (KEY_MAP[e.key] !== undefined) {
+          e.preventDefault();
+          playAnimal(KEY_MAP[e.key]);
           return;
         }
 
