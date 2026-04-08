@@ -503,12 +503,22 @@
 
       /* ── Numpad special key mapping ── */
       const KEY_MAP = {
-        'Clear': 10,
-        '/':     11,
-        '*':     12,
-        '-':     13,
-        '+':     14,
-        'Enter': 15,
+        'Clear':  10,
+        '/':      11,
+        '*':      12,
+        '-':      13,
+        '+':      14,
+        'Enter':  15,
+        /* NumLock OFF — navigation keys map to their numpad digit equivalents */
+        'End':       1,   // numpad 1
+        'ArrowDown': 2,   // numpad 2
+        'PageDown':  3,   // numpad 3
+        'ArrowLeft': 4,   // numpad 4
+        'ArrowRight':6,   // numpad 6
+        'Home':      7,   // numpad 7
+        'ArrowUp':   8,   // numpad 8
+        'PageUp':    9,   // numpad 9
+        'Insert':    16,  // numpad 0
       };
 
       /* ── Keyboard handling ── */
@@ -549,7 +559,9 @@
           return;
         }
 
-        if (d === 1) {
+        if (d === 0) {
+          playAnimal(16);
+        } else if (d === 1) {
           pendingDigit = 1;
           digitTimer = setTimeout(() => {
             pendingDigit = null;
