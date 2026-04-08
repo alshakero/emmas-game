@@ -307,26 +307,26 @@
 
     <script>
       const ANIMALS = [
-        { num: 1, name: 'Lion', videoId: 'MObqFN_Jr6U' },
-        { num: 2, name: 'Elephant', videoId: 'HuuLUF767oY' },
-        { num: 3, name: 'Horse', videoId: 'erYhEM4qLpU' },
-        { num: 4, name: 'Hippo', videoId: 'N9pHfrD0cWY' },
-        { num: 5, name: 'Tiger', videoId: 'U9Nr0oIXf60' },
-        { num: 6, name: 'Dog', videoId: 'sBlBCFKfSfs' },
-        { num: 7, name: 'Duck', videoId: '54-8Ti_9qFg' },
-        { num: 8, name: 'Chicken', videoId: 'dFZa2KZ4fG4' },
-        { num: 9, name: 'Monkey', videoId: '-UrrgC52WFI' },
-        { num: 10, name: 'Rhino', videoId: 'zANvvpxpwkU' },
-        { num: 11, name: 'Wolf', videoId: 'op7fRsvWowA' },
-        { num: 12, name: 'Fox', videoId: 'JI65jmqAw_I' },
-        { num: 13, name: 'Frog', videoId: 'C00uGPPJ2WU' },
-        { num: 14, name: 'Crocodile', videoId: '_bVZeOt7bCw' },
-        { num: 15, name: 'Mouse', videoId: 'pqNDvkSyeCM' },
-        { num: 16, name: 'Cow', videoId: '5zhTzItoK4I' },
-        { num: 17, name: 'Cat', videoId: '8jM4XT-5CUA' },
-        { num: 18, name: 'Sheep', videoId: '0fTwdhslb6E' },
-        { num: 19, name: 'Fish', videoId: 'JKGtAfQHFrI' },
-        { num: 20, name: 'Pig', videoId: '80Ey06g5VIE' },
+        { num: 1,  name: 'Lion',      videoId: 'MObqFN_Jr6U', start: 0 },
+        { num: 2,  name: 'Elephant',  videoId: 'HuuLUF767oY', start: 0 },
+        { num: 3,  name: 'Horse',     videoId: 'erYhEM4qLpU', start: 0 },
+        { num: 4,  name: 'Hippo',     videoId: 'N9pHfrD0cWY', start: 0 },
+        { num: 5,  name: 'Tiger',     videoId: 'U9Nr0oIXf60', start: 0 },
+        { num: 6,  name: 'Dog',       videoId: 'sBlBCFKfSfs', start: 0 },
+        { num: 7,  name: 'Duck',      videoId: '54-8Ti_9qFg', start: 0 },
+        { num: 8,  name: 'Chicken',   videoId: 'dFZa2KZ4fG4', start: 0 },
+        { num: 9,  name: 'Monkey',    videoId: '-UrrgC52WFI', start: 0 },
+        { num: 10, name: 'Rhino',     videoId: 'zANvvpxpwkU', start: 0 },
+        { num: 11, name: 'Wolf',      videoId: 'op7fRsvWowA', start: 0 },
+        { num: 12, name: 'Fox',       videoId: 'JI65jmqAw_I', start: 0 },
+        { num: 13, name: 'Frog',      videoId: 'C00uGPPJ2WU', start: 0 },
+        { num: 14, name: 'Crocodile', videoId: '_bVZeOt7bCw', start: 0 },
+        { num: 15, name: 'Mouse',     videoId: 'pqNDvkSyeCM', start: 0 },
+        { num: 16, name: 'Cow',       videoId: '5zhTzItoK4I', start: 0 },
+        { num: 17, name: 'Cat',       videoId: '8jM4XT-5CUA', start: 0 },
+        { num: 18, name: 'Sheep',     videoId: '0fTwdhslb6E', start: 0 },
+        { num: 19, name: 'Fish',      videoId: 'JKGtAfQHFrI', start: 0 },
+        { num: 20, name: 'Pig',       videoId: '80Ey06g5VIE', start: 0 },
       ];
 
       /* ── State ── */
@@ -498,7 +498,7 @@
         }
         state = 'video';
         showScreen('video-screen');
-        ytPlayer.loadVideoById({ videoId: animal.videoId, startSeconds: 0, endSeconds: 15 });
+        ytPlayer.loadVideoById({ videoId: animal.videoId, startSeconds: animal.start, endSeconds: animal.start + 15 });
       }
 
       /* ── Numpad special key mapping ── */
